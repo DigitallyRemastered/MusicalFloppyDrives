@@ -1,4 +1,4 @@
-#include <TimerOne.h>
+IntervalTimer myTimer;
 
 //Conditions and constraints
 unsigned int period[60] = {     30402,  28696 , 27085 , 25565 , 24130 , 22776 , 21497 , 20291 , 19152 , 18077 , 17063 , 16105,
@@ -101,8 +101,7 @@ void setup() {
   usbMIDI.setHandleNoteOn(OnNoteOn);
   usbMIDI.setHandlePitchChange(OnPitchChange);
 
-  Timer1.initialize(RESOLUTION);
-  Timer1.attachInterrupt(processNotes);
+  myTimer.begin(processNotes, RESOLUTION);
 }
 
 void loop() {
@@ -189,7 +188,7 @@ void pitchbend_Calculate() {
 
 void resetDrives() {
   //Serial.println("resetDrives activated");
-  Timer1.detachInterrupt();                                                                 //Turn Interrupt off
+  myTimer.end();                                                                 //Turn Interrupt off
   for (byte channel = 1; channel <= 16; channel++) {                                        // Set all drives direction to backwards
     currentStateDir[channel] = HIGH;
     digitalWrite(DIRPIN[channel], currentStateDir[channel]);
@@ -206,5 +205,5 @@ void resetDrives() {
     digitalWrite(DIRPIN[channel], currentStateDir[channel]);
     currentPosition[channel] = 0;
   }
-  Timer1.attachInterrupt(processNotes);                                                   // Turn interrupt back on
+  myTimer.begin(processNotes, RESOLUTION);                                                   // Turn interrupt back on
 }
